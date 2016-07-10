@@ -1,6 +1,6 @@
 {
   "name": "convo-builder",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Easily build conversations for Twilio, Facebook Messenger, and more.",
   "main": "index.js",
   "scripts": {
