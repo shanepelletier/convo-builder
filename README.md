@@ -96,6 +96,7 @@ convo.converse(messages[], options, callback)
 Sends the user an array of messages once at a time using the provided options, calls the provided callback with the user's response to each message in turn. Takes an optional callback that runs after all of the messages are sent.
 
 ### Options for convo.say() and convo.converse()
+```javascript
 {
   provider: '<Either messenger or twilio>',
   providerOptions: {
@@ -103,3 +104,4 @@ Sends the user an array of messages once at a time using the provided options, c
     recipientId: '<User's facebook id>' // For Facebook messenger
   }
 }
+```
