@@ -8,9 +8,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 var twilioProvider = require('./providers/twilioProvider.js');
+var messengerProvider = require('./providers/messengerProvider.js');
 
 var providers = {
-  twilio: undefined
+  twilio: undefined,
+  messenger: undefined
 }
 
 // Exports the constructor
@@ -51,6 +53,16 @@ exports.configure = function (options) {
     }
 
     providers.twilio = twilioProvider(options.twilio.ACCOUNT_SID, options.twilio.AUTH_TOKEN, options.twilio.phoneNumber);
+  } else {
+    if (options.messenger.VERIFY_TOKEN === undefined) {
+      throw new ReferenceError('options.messenger.VERIFY_TOKEN must be defined');
+    }
+
+    if (options.messenger.PAGE_ACCESS_TOKEN === undefined) {
+      throw new ReferenceError('options.messenger.PAGE_ACCESS_TOKEN must be defined');
+    }
+
+    providers.messenger = messengerProvider(options.messenger.VERIFY_TOKEN, options.messenger.PAGE_ACCESS_TOKEN);
   }
 
   app.listen(options.port, function () {
@@ -103,9 +115,9 @@ exports.converse = function (messages) {
   }
 
   // TODO: add support for twilio-voice and Facebook messenger
-  if (options.provider !== 'twilio' //      ||
+  if (options.provider !== 'twilio'       ||
       //options.provider !== 'twilio-voice' ||
-    /*options.provider !== 'messenger'*/) {
+    options.provider !== 'messenger') {
     return callback('Error: provider must be twilio. Defaulting to twilio...');
     options.provider = 'twilio';
   }
@@ -152,12 +164,12 @@ exports.say = function (message, options, callback) {
     return callback('Error: providerOptions is required');
   }
 
-  if (options.provider !== 'twilio'    //||
+  if (options.provider !== 'twilio'    ||
     //options.provider !== 'twilio-voice ||'
-  /*options.provider !== 'messenger'*/) {
-  return callback('Error: provider must be twilio. Defaulting to twilio...');
-  options.provider = 'twilio';
-}
+      options.provider !== 'messenger') {
+    return callback('Error: provider must be twilio. Defaulting to twilio...');
+    options.provider = 'twilio';
+  }
 
   providers[options.provider].send(message, options.providerOptions, function (err) {
     callback(false);
@@ -165,7 +177,10 @@ exports.say = function (message, options, callback) {
 };
 
 // Handles incoming messages over HTTP
-app.post('/', function (req, res) {
-  // TODO: figure out which provider to send message based on contents of message
-  providers['twilio'].receive(req, res);
+app.all('/', function (req, res) {
+  // If the 'object' property of req.body is defined, the request should be handled by messengerProvider. Otherwise, it should be handled by twilioProvider.
+  if (typeof req.body.object !== 'undefined') {
+    providers['messenger'].receive(req, res);
+  } else {
+    providers['twilio'].receive(req, res);
 });

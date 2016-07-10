@@ -1,7 +1,6 @@
 'use strict';
 
 var twilio = require('twilio'); // For SMS messaging
-var app = require('express')() // For setting up webhook for twilio
 
 // Exports the constructor
 exports = module.exports = TwilioProvider;
