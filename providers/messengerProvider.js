@@ -71,7 +71,7 @@ MessengerProvider.prototype.sendAndWaitForResponse = function (message, options,
 
     var messageData = {
       recipient: {
-        id: recipientId
+        id: options.recipientId
       },
       message: {
         text: message
