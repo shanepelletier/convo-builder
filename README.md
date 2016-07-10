@@ -100,8 +100,8 @@ Sends the user an array of messages once at a time using the provided options, c
 {
   provider: '<Either messenger or twilio>',
   providerOptions: {
-    phoneNumber: '<User's phone number>' // For twilio
-    recipientId: '<User's facebook id>' // For Facebook messenger
+    phoneNumber: '<User phone number>' // For twilio
+    recipientId: '<User facebook id>' // For Facebook messenger
   }
 }
 ```
